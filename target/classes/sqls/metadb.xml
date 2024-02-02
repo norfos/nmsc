@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="go.kr.nmsc.metadb.dao.MetadbDao">
+  
+  
+  <select id="selSatellite" resultType="HashMap">
+  <![CDATA[ 
+   SELECT SATELLITE FROM TB_METADATA_DB GROUP BY SATELLITE ORDER BY SATELLITE
+  ]]> 
+  </select>
+  
+  <select id="selSensor" resultType="HashMap">
+  <![CDATA[ 
+   SELECT SENSOR FROM TB_METADATA_DB GROUP BY SENSOR ORDER BY SENSOR
+  ]]> 
+  </select>
+  
+  <select id="selDataLvl" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_LVL FROM TB_METADATA_DB GROUP BY DATA_LVL ORDER BY DATA_LVL
+  ]]> 
+  </select>
+  
+  <select id="selDataType" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_TYPE FROM TB_METADATA_DB GROUP BY DATA_TYPE ORDER BY DATA_TYPE
+  ]]> 
+  </select>
+  
+  <select id="selDataFormat" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_FORMAT FROM TB_METADATA_DB GROUP BY DATA_FORMAT ORDER BY DATA_FORMAT
+  ]]> 
+  </select>
+  
+  <select id="selDataArea" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_AREA FROM TB_METADATA_DB GROUP BY DATA_AREA ORDER BY DATA_AREA
+  ]]> 
+  </select>
+  
+  <select id="selDataRes" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_RES FROM TB_METADATA_DB GROUP BY DATA_RES ORDER BY DATA_RES
+  ]]> 
+  </select>
+  
+  <select id="selDataProj" resultType="HashMap">
+  <![CDATA[ 
+   SELECT DATA_PROJ FROM TB_METADATA_DB GROUP BY DATA_PROJ ORDER BY DATA_PROJ
+  ]]> 
+  </select>
+  
+  
+  <select id="selFileList" parameterType="map" resultType="HashMap">
+	SELECT 
+		FILE_PATH, FILE_PTN, PRODUCT_DETAIL_SQ
+	FROM 
+		TB_METADATA_DB tmd 
+	WHERE 1=1
+	<if test="satellite != null and satellite != ''">
+		AND SATELLITE = #{satellite}
+	</if>
+	<if test="sensor != null and sensor != ''">
+		AND SENSOR = #{sensor}
+	</if>
+	<if test="dataLvl != null and dataLvl != ''">
+		AND DATA_LVL = #{dataLvl}
+	</if>
+	<if test="dataType != null and dataType != ''">
+		AND DATA_TYPE = #{dataType}
+	</if>
+	<if test="dataFormat != null and dataFormat != ''">
+		AND DATA_FORMAT = #{dataFormat}
+	</if>
+	<if test="dataArea != null and dataArea != ''">
+		AND DATA_AREA = #{dataArea}
+	</if>
+	<if test="dataRes != null and dataRes != ''">
+		AND DATA_RES = #{dataRes}
+	</if>
+	<if test="dataProj != null and dataProj != ''">
+		AND DATA_PROJ = #{dataProj}
+	</if>
+  </select>
+  
+  
+  	<select id="selMetadbList" parameterType="map" resultType="HashMap">
+		SELECT SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_DETAIL_SQ
+		FROM TB_METADATA_DB
+	 	WHERE 1=1
+	 	<if test="search == 'path' and search != null">
+			AND FILE_PATH LIKE '%'||#{searchVal}||'%'
+		</if>
+		<if test="search == 'ptn' and search != null">
+			AND FILE_PTN LIKE '%'||#{searchVal}||'%'
+		</if> 
+	
+	
+	</select>
+  
+  </mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="go.kr.nmsc.dao.ItemDao">
+  
+  
+<select id="itemList" resultType="HashMap">
+	<![CDATA[ 
+	SELECT 
+		SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_CYCLE, PRODUCT_STD_TIME, 'Y' AS SYNC_YN, NVL(PRODUCT_CYCLE_YN,'Y') AS CYCLE_YN
+	FROM 
+		DMS02.TB_METADATA_DB MD
+	WHERE 1=1
+		AND MONITOR_YN = 'Y'
+		AND PRODUCT_CYCLE > 0
+		AND PRODUCT_CYCLE_YN IS NULL
+		AND PRODUCT_CYCLE != 1440
+ 	]]> 
+</select>
+
+<select id="itemOneList" resultType="HashMap">
+	<![CDATA[ 
+	SELECT 
+		SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_CYCLE, PRODUCT_STD_TIME, 'Y' AS SYNC_YN, NVL(PRODUCT_CYCLE_YN,'Y') AS CYCLE_YN
+	FROM 
+		DMS02.TB_METADATA_DB MD
+	WHERE 1=1
+		AND MONITOR_YN = 'Y'
+		AND PRODUCT_CYCLE > 0
+		AND PRODUCT_CYCLE_YN IS NULL
+		AND PRODUCT_CYCLE = 1440
+ 	]]> 
+</select>	
+
+
+<select id="itemNotSyncList" resultType="HashMap">
+	SELECT 
+		SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_CYCLE, PRODUCT_STD_TIME, 'N' AS SYNC_YN, NVL(PRODUCT_CYCLE_YN,'Y') AS CYCLE_YN
+	FROM 
+		DMS02.TB_METADATA_DB MD
+	WHERE 1=1
+		AND PRODUCT_CYCLE_YN IS NULL
+		AND MONITOR_YN = 'Y'
+		AND PRODUCT_CYCLE = 0
+		<if test="stdTime == 0">
+		AND PRODUCT_STD_TIME = 0
+		</if>
+		<if test="stdTime > 0">
+		AND PRODUCT_STD_TIME > 0
+		</if>
+</select>	
+		
+  
+<select id="selMetadbList" parameterType="map" resultType="HashMap">
+	SELECT SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_DETAIL_SQ, PRODUCT_CYCLE, PRODUCT_STD_TIME, MONITOR_YN, PRODUCT_CYCLE_YN
+	FROM DMS02.TB_METADATA_DB MD
+	WHERE 1=1
+	<if test="searchCol != '' and searchCol != null and searchText != '' and searchText != null">
+	<choose>
+		<when test="searchCol == 'DATA_AREA'">
+			AND  ${searchCol} = #{searchText}
+		</when>
+		<otherwise>
+			AND  ${searchCol} LIKE '%'||#{searchText}||'%'
+		</otherwise>
+	</choose> 
+	</if>
+	<if test="searchCol2 != '' and searchCol2 != null and searchText2 != '' and searchText2 != null">
+	<choose>
+		<when test="searchCol2 == 'DATA_AREA'">
+			AND  ${searchCol2} = #{searchText2}
+		</when>
+		<otherwise>
+			AND  ${searchCol2} LIKE '%'||#{searchText2}||'%'
+		</otherwise>
+	</choose> 
+	</if>
+	<if test="searchCol3 != '' and searchCol3 != null and searchText3 != '' and searchText3 != null">
+	<choose>
+		<when test="searchCol3 == 'DATA_AREA'">
+			AND  ${searchCol3} = #{searchText3}
+		</when>
+		<otherwise>
+			AND  ${searchCol3} LIKE '%'||#{searchText3}||'%'
+		</otherwise>
+	</choose> 
+	</if>
+</select>
+
+<update id="updateMetadb" parameterType="map">
+	UPDATE DMS02.TB_METADATA_DB
+	SET 
+	PRODUCT_CYCLE = ${cycle}, 
+	PRODUCT_STD_TIME = ${stdTime}, 
+	<if test="productCycleYn != 'undefined' and productCycleYn != ''">
+	PRODUCT_CYCLE_YN = #{productCycleYn},
+	</if>
+	MONITOR_YN = #{monitorYn}
+	WHERE PRODUCT_DETAIL_SQ = ${detailSeq}
+</update>
+
+<select id="itemCollectList" resultType="HashMap">
+	SELECT 
+		SATELLITE, SENSOR, DATA_LVL, DATA_TYPE, DATA_FORMAT, DATA_AREA, DATA_RES, DATA_PROJ, FILE_PATH, FILE_PTN, PRODUCT_CYCLE, PRODUCT_STD_TIME, 'N' AS SYNC_YN, NVL(PRODUCT_CYCLE_YN,'Y') AS CYCLE_YN
+	FROM 
+		DMS02.TB_METADATA_DB MD
+	WHERE 1=1
+		AND MONITOR_YN = 'Y'
+		AND PRODUCT_CYCLE_YN = 'N'
+</select>
+  
+</mapper>
